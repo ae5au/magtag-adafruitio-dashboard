@@ -10,7 +10,6 @@ magtag.add_text(
     text_position=(5, 0), text_scale=1, text_anchor_point=(0, 0), line_spacing=1
 )
 
-# magtag.set_text("Fetching data...")
 while True:
     magtag.get_local_time("America/Chicago")
     text = "Checked at {}\n".format(datetime.now())
@@ -19,6 +18,9 @@ while True:
     acurite = magtag.get_io_group("acurite").get("feeds")
     acuritewarn = magtag.get_io_group("acurite-warn").get("feeds")
     acuritecrit = magtag.get_io_group("acurite-crit").get("feeds")
+
+    warn_active = False
+    crit_active = False
 
     for feed in acurite:
         timedelta = datetime.now() - datetime.fromisoformat(feed.get("updated_at").replace("Z",""))
@@ -30,14 +32,20 @@ while True:
         status = '        '
         if current_temp > crit_temp:
             status = "CRITICAL"
+            crit_active = True
         elif current_temp > warn_temp:
             status = "WARNING "
-        print("{:<15} {:6.2f} {} - {:.0f} min ago".format(feed_name, current_temp, status, timedelta.total_seconds() / 60))
+            warn_active = True
+        print("{:<15} {:6.2f} {} {} {} - {:.0f} min ago".format(feed_name, current_temp, warn_temp, crit_temp, status, timedelta.total_seconds() / 60))
         text += "{:<15} {:6.2f} {} - {:.0f} min ago\n".format(feed_name, current_temp, status, timedelta.total_seconds() / 60)
-        print("{} warning = {}".format(feed_name, warn_temp))
+
     magtag.set_text(text)
+    if crit_active:
+        print("Critical alarm active!")
+    elif warn_active:
+        print("Warning alert active!")
+    else:
+        print("No alerts.")
 
     time.sleep(60)
     #magtag.exit_and_deep_sleep(10)
-    # 
-    # 
