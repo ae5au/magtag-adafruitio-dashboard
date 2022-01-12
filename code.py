@@ -5,6 +5,16 @@ import time
 from adafruit_magtag.magtag import MagTag
 from adafruit_datetime import datetime
 magtag = MagTag()
+import digitalio
+import board
+
+# debug_pin = digitalio.DigitalInOut(board.A1)
+# debug_pin.direction = digitalio.Direction.OUTPUT
+# 
+# while True:
+#     debug_pin.value = not debug_pin.value
+#     time.sleep(0.25)
+#     print("Hello!")
 
 def deep_sleep(sleep_time, message, display_message):
     print(message)
@@ -72,6 +82,7 @@ while True:
             print("No alerts.")
         
         deep_sleep(300, "Sleeping", False)
+        #deep_sleep(15, "Sleeping", False)
         #time.sleep(60)
     
     except Exception as e:
